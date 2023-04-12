@@ -1,0 +1,30 @@
+[general]
+name=TactileMaps
+description=Utilities to create tactile maps.
+
+version=0.1.0
+qgisMinimumVersion=3.16
+qgisMaximumVersion=3.99
+author=Laboratorio de Geociencias - FIE
+email=geociencias@fie.undef.edu.ar
+
+about=Processing plugin with tools to generate digital elevation models from vector geometries, in order to print tactile maps.
+    It includes a scale calculator, tools for scaling geometries to the size of the printed map, polygon edge extraction, Braille writing, Gaussian filtering, and rasterization.
+
+tracker=https://github.com/labgeofie/qgis-tactilemaps/issues
+repository=https://github.com/labgeofie/qgis-tactilemaps
+
+tags=tactile,braille,gaussian,dem,3d,print
+
+homepage=https://github.com/labgeofie/qgis-tactilemaps/wiki
+
+changelog=
+    0.1.0 - First testing release
+
+icon=
+
+experimental=False
+deprecated=False
+server=False
+
+hasProcessingProvider=yes
