@@ -47,7 +47,7 @@ Las siguientes características serán incluídas antes de publicarse la primer 
   - [ ] writebraille()
 
 - [ ] Crear el ícono del complemento.
-- [ ] Documentar la [wiki del proyecto](https://github.com/labgeofie/qgis-tactilemaps/wiki).
+- [ ] Documentar la [wiki](https://github.com/labgeofie/qgis-tactilemaps/wiki).
 - [ ] Adjuntar un modelo gráfico que realice el flujo de trabajo completo utilizando las herramientas instaladas por el complemento, a partir una capa de polígonos hasta el mapa en formato raster para imprimir en 3D.
 
 ---
