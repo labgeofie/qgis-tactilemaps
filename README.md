@@ -15,7 +15,7 @@ La publicación en el repositorio oficial de complementos de QGIS se realizará 
 Actualmente el complemento está en estado de desarrollo y puede instalarse de dos maneras:
 
 1. Agregando al listado de repositorios de complementos de QGIS:
-   - En el menú *Complementos* de QGIS, abra el diálogo *Administrar e instalar complementos...*
+   - En el menú *Complementos*, abra el diálogo *Administrar e instalar complementos...*
    - En la pestaña *Configuración*, en la sección de *Repositorios de complementos*, presione el botón Añadir
    - En *Nombre*, elija un nombre que identifique al repositorio, por ejemplo: `Repositorio de Mapas Táctiles`.
    - En *URL*, ingrese la siguiente dirección: `https://github.com/labgeofie/qgis-tactilemaps/releases/latest/download/plugins.xml`
