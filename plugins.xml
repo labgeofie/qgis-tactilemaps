@@ -1,0 +1,21 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<plugins>
+    <pyqgis_plugin name="TactileMaps" version="0.1.0">
+        <description>Utilities to create tactile maps.</description>
+        <version>0.1.0</version>
+        <qgis_minimum_version>3.16</qgis_minimum_version>
+        <homepage>https://github.com/labgeofie/qgis-tactilemaps/wiki</homepage>
+        <file_name>tactilemaps-v0.1.0.zip</file_name>
+        <icon></icon>
+        <author_name>Laboratorio de Geociencias - FIE</author_name>
+        <download_url>https://github.com/labgeofie/qgis-tactilemaps/releases/download/v0.1.0/tactilemaps.v0.1.0.zip</download_url>
+        <uploaded_by>Gabriel De Luca</uploaded_by>
+        <create_date>2023-04-11</create_date>
+        <update_date>2023-04-11</update_date>
+        <experimental>False</experimental>
+        <deprecated>False</deprecated>
+        <tracker>https://github.com/labgeofie/qgis-tactilemaps/issues</tracker>
+        <repository>https://github.com/labgeofie/qgis-tactilemaps</repository>
+        <tags>tactile,braille,gaussian,dem,3d,print</tags>
+    </pyqgis_plugin>
+</plugins>
