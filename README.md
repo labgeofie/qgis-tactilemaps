@@ -20,7 +20,7 @@ Actualmente el complemento está en estado de desarrollo y puede instalarse de d
    - En *Nombre*, elija un nombre que identifique al repositorio, por ejemplo: `Repositorio de Mapas Táctiles`.
    - En *URL*, ingrese la siguiente dirección: `https://github.com/labgeofie/qgis-tactilemaps/releases/latest/download/plugins.xml`
    - Al presionar *Aceptar*, el repositorio se agrega al listado de repositorios de complementos de QGIS, y podrá instalar el complemento desde la pestaña *Todos*.
-   - **De esta forma, cada vez que se realice un nuevo lanzamiento, podrá actualizar el complemento sin necesidad de volver a instalarlo.**
+   - **De esta forma, cada vez que se publique una nueva versión, podrá actualizar el complemento sin necesidad de volver a instalarlo.**
 
 2. Instalando una versión en particular desde un archivo zip.
    - Desde la página de [Lanzamientos](https://github.com/labgeofie/qgis-tactilemaps/releases), descargue el archivo `tactilemaps.x.y.z.zip` de la versión que desee instalar.
