@@ -36,7 +36,7 @@ Las siguientes características serán incluídas antes de publicarse la primer 
 
 - Algoritmos de procesamiento:
   - [x] Calcular escala
-  - [ ] Escalar capa vectorial
+  - [x] Escalar capa vectorial
   - [ ] Extraer contornos de polígonos
   - [ ] Escribir Braille
   - [ ] Rasterizar mapa
