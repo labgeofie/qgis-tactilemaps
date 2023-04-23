@@ -16,26 +16,27 @@
 from math import ceil
 
 from qgis.core import (
+    QgsGeometry,
+    QgsFeature,
+    QgsFeatureSink,
+    QgsField,
+    QgsFields,
+    QgsProcessing,
     QgsProcessingAlgorithm,
+    QgsProcessingException,
+    QgsProcessingOutputNumber,
     QgsProcessingParameterDefinition,
     QgsProcessingParameterExtent,
-    QgsProcessingParameterNumber,
     QgsProcessingParameterFeatureSink,
-    QgsProcessing,
-    QgsProcessingOutputNumber,
-    QgsUnitTypes,
+    QgsProcessingParameterNumber,
     QgsRectangle,
-    QgsGeometry,
-    QgsFields,
-    QgsField,
-    QgsFeature,
-    QgsWkbTypes,
-    QgsFeatureSink,
+    QgsUnitTypes,
+    QgsWkbTypes
 )
 from qgis.PyQt.QtCore import (
     QCoreApplication,
     QSettings,
-    QVariant,
+    QVariant
 )
 
 
@@ -56,8 +57,8 @@ class ComputeScale(QgsProcessingAlgorithm):
 
     def rwSettings(self, mode, setting_name, value):
         """Read and write tactilemaps settings.
-        
-        If 'mode' is 'r', read the value of 'setting_name', 
+
+        If 'mode' is 'r', read the value of 'setting_name',
             or a default 'value'.
         If 'mode' is 'w', write the 'value' in the 'setting_name'.
         """
@@ -71,7 +72,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             raise ValueError("Invalid mode. Expected one of 'w' or 'r'.")
 
     def createInstance(self):
-        """Return a new instance of the algorithm."""        
+        """Return a new instance of the algorithm."""
         return ComputeScale()
 
     def name(self):
@@ -80,7 +81,7 @@ class ComputeScale(QgsProcessingAlgorithm):
 
     def displayName(self):
         """Return the algorithm display name."""
-        return self.tr('Compute Scale')
+        return self.tr('Compute scale')
 
     def group(self):
         """Return the name of the group this algorithm belongs to."""
@@ -115,33 +116,33 @@ class ComputeScale(QgsProcessingAlgorithm):
 
     def initAlgorithm(self, config=None):
         """Define inputs and outputs of the algorithm."""
-        advanced_flag = QgsProcessingParameterDefinition.FlagAdvanced        
+        advanced_flag = QgsProcessingParameterDefinition.FlagAdvanced
         # PARAMETERS
         extent_param = QgsProcessingParameterExtent(
-            self.INPUT, 
+            self.INPUT,
             self.tr('Extent to compute scale')
         )
         self.addParameter(extent_param)
         width_param = QgsProcessingParameterNumber(
-            self.WIDTH, 
-            self.tr(r'Width of the map (in millimeters)'), 
-            QgsProcessingParameterNumber.Integer, 
+            self.WIDTH,
+            self.tr(r'Width of the map (in millimeters)'),
+            QgsProcessingParameterNumber.Integer,
             minValue=1,
             defaultValue=self.rwSettings('r', 'width', 210)
         )
         self.addParameter(width_param)
         height_param = QgsProcessingParameterNumber(
-            self.HEIGHT, 
-            self.tr(r'Height of the map (in millimeters)'), 
-            QgsProcessingParameterNumber.Integer, 
+            self.HEIGHT,
+            self.tr(r'Height of the map (in millimeters)'),
+            QgsProcessingParameterNumber.Integer,
             minValue=1,
             defaultValue=self.rwSettings('r', 'height', 297)
         )
         self.addParameter(height_param)
         margin_param = QgsProcessingParameterNumber(
-            self.MARGIN, 
-            self.tr(r'Margin percentage'), 
-            QgsProcessingParameterNumber.Integer, 
+            self.MARGIN,
+            self.tr(r'Margin percentage'),
+            QgsProcessingParameterNumber.Integer,
             minValue=0,
             defaultValue=self.rwSettings('r', 'margin', 0)
         )
@@ -150,9 +151,9 @@ class ComputeScale(QgsProcessingAlgorithm):
         )
         self.addParameter(margin_param)
         multiple_param = QgsProcessingParameterNumber(
-            self.MULTIPLE, 
-            self.tr(r'Multiple to round the scale denominator'), 
-            QgsProcessingParameterNumber.Integer, 
+            self.MULTIPLE,
+            self.tr(r'Multiple to round the scale denominator'),
+            QgsProcessingParameterNumber.Integer,
             minValue=1,
             defaultValue=self.rwSettings('r', 'multiple', 1)
         )
@@ -176,19 +177,19 @@ class ComputeScale(QgsProcessingAlgorithm):
 
     def processAlgorithm(self, parameters, context, feedback):
         """Compute Scale process.
-        
+
         Return the extent, adjusted by the computed scale, in a vector
             layer with a 'scale' field.
         Also return the computed scale denominator number.
         """
         # Get parameters and write settings
         extent = self.parameterAsExtent(
-            parameters, 
-            self.INPUT, 
+            parameters,
+            self.INPUT,
             context
         )
         crs = self.parameterAsExtentCrs(
-            parameters, 
+            parameters,
             self.INPUT,
             context
         )
@@ -215,30 +216,49 @@ class ComputeScale(QgsProcessingAlgorithm):
             self.MULTIPLE,
             context
         )
-        self.rwSettings('w', 'multiple', multiple)        
+        self.rwSettings('w', 'multiple', multiple)
         # Perform checks and processing
         if not crs.isValid():
             msg = self.tr('The CRS of the extent could not be \
-                determined or is invalid.')
+                determined or is invalid.'
+            )
             feedback.reportError(
                 msg,
                 fatalError=True
-        )
+            )
             return {}
         if crs.isGeographic():
             msg = self.tr('The CRS of the extent must be projected, \
-                but {authid} is a geographic CRS.')
+                but {authid} is a geographic CRS.'
+            )
             feedback.reportError(
                 msg.format(authid=crs.authid()),
-                fatalError=True)
+                fatalError=True
+            )
             return {}
+        fields = QgsFields()
+        fields.append(QgsField('scale', QVariant.Int))
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            QgsWkbTypes.Polygon,
+            crs
+        )
+        if sink is None:
+            raise QgsProcessingException(
+                self.invalidSinkError(parameters, self.OUTPUT)
+            )
+        if feedback.isCanceled():
+            return {}
+        # Compute multiplier from map units (mm) to extent crs units
         crs_units = crs.mapUnits()
-        # Multiplier from map units (mm) to extent crs units
         units_factor = QgsUnitTypes.fromUnitToUnitFactor(
             QgsUnitTypes.DistanceMillimeters,
             crs_units
         )
-        # Map width and height computed in the units of the extent crs
+        # Compute map width and height in the units of the extent crs
         map_width = width * units_factor
         map_height = height * units_factor
         # Expand input extent to margin
@@ -252,7 +272,13 @@ class ComputeScale(QgsProcessingAlgorithm):
         )
         # Round (to a multiple) the scale denominator
         rounded_scale = multiple * ceil(scale/multiple)
-        # Create geometry, attribute, feature and sink
+        QSettings().setValue(
+            'tactilemaps/scalevectorlayer/scale',
+            rounded_scale
+        )
+        # Create feature, attribute and geometry
+        feat = QgsFeature(fields)
+        feat.setAttribute('scale', rounded_scale)
         rect_width = map_width * rounded_scale
         rect_height = map_height * rounded_scale
         rectangle = QgsRectangle.fromCenterAndSize(
@@ -261,20 +287,6 @@ class ComputeScale(QgsProcessingAlgorithm):
             rect_height
         )
         geom = QgsGeometry.fromRect(rectangle)
-        fields = QgsFields()
-        fields.append(QgsField('scale', QVariant.Int))
-        feat = QgsFeature(fields)
-        feat.setAttribute('scale', rounded_scale)
         feat.setGeometry(geom)
-        (sink, dest_id) = self.parameterAsSink(
-            parameters,
-            self.OUTPUT,
-            context,
-            fields,
-            QgsWkbTypes.Polygon,
-            crs
-        )
-        if feedback.isCanceled():
-            return {}
         sink.addFeature(feat, QgsFeatureSink.FastInsert)
-        return {'OUTPUT': dest_id, 'SCALE': rounded_scale}
+        return {self.OUTPUT: dest_id, self.SCALE: rounded_scale}
