@@ -17,8 +17,8 @@ import os
 
 from qgis import processing
 from qgis.core import QgsApplication, QgsSettings
-from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
+from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMenu
 
 from tactilemaps.processing.tactilemaps_provider import (
@@ -62,17 +62,24 @@ class TactileMapsPlugin:
         """Init actions, run methods, menu entries and provider."""
         # Init actions
         self.computescale_action = QAction(
-            self.tr('&Compute Scale'),
+            self.tr('&Compute scale'),
             self.iface.mainWindow()
         )
-        # Connect actions to run methods
         self.computescale_action.triggered.connect(
             self.run_computescale
+        )
+        self.scalevectorlayer_action = QAction(
+            self.tr('&Scale vector layer'),
+            self.iface.mainWindow()
+        )
+        self.scalevectorlayer_action.triggered.connect(
+            self.run_scalevectorlayer
         )
         # Init menu
         self.menu = QMenu(self.tr('&Tactile Maps'))
         self.menu.addActions([
-            self.computescale_action
+            self.computescale_action,
+            self.scalevectorlayer_action
         ])
         self.iface.pluginMenu().addMenu(self.menu)
         # Init Processing
@@ -84,8 +91,16 @@ class TactileMapsPlugin:
             self.tr('&Tactile Maps'),
             self.computescale_action
         )
+        self.iface.removePluginMenu(
+            self.tr('&Tactile Maps'),
+            self.scalevectorlayer_action
+        )
         QgsApplication.processingRegistry().removeProvider(self.provider)
 
     def run_computescale(self):
-        """Open the Compute Scale algorithm dialog."""
+        """Open the Compute scale algorithm dialog."""
         processing.execAlgorithmDialog('tactilemaps:computescale')
+
+    def run_scalevectorlayer(self):
+        """Open the Scale vector layer algorithm dialog."""
+        processing.execAlgorithmDialog('tactilemaps:scalevectorlayer')

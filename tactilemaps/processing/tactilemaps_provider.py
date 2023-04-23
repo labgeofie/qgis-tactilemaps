@@ -17,7 +17,8 @@ from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import QgsProcessingProvider
 
 from tactilemaps.processing.algorithms import (
-    computescale_algorithm
+    computescale_algorithm,
+    scalevectorlayer_algorithm
 )
 
 
@@ -31,6 +32,7 @@ class TactileMapsProvider(QgsProcessingProvider):
     def loadAlgorithms(self, *args, **kwargs):
         """Load the algorithms of the provider."""
         self.addAlgorithm(computescale_algorithm.ComputeScale())
+        self.addAlgorithm(scalevectorlayer_algorithm.ScaleVectorLayer())
 
     def id(self, *args, **kwargs):
         """Return the id of the provider."""
@@ -38,7 +40,7 @@ class TactileMapsProvider(QgsProcessingProvider):
 
     def name(self, *args, **kwargs):
         """Return the display name of the provider."""
-        return self.tr('Tactile Maps')
+        return self.tr('Tactile maps')
 
     def icon(self):
         """Return the icon of the provider."""
