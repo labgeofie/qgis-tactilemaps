@@ -2,7 +2,7 @@
 name=TactileMaps
 description=Utilities to create tactile maps.
 
-version=0.2.0
+version=0.3.0
 qgisMinimumVersion=3.16
 qgisMaximumVersion=3.99
 author=Laboratorio de Geociencias - FIE
@@ -19,6 +19,7 @@ tags=tactile,braille,gaussian,dem,3d,print
 homepage=https://github.com/labgeofie/qgis-tactilemaps/wiki
 
 changelog=
+    0.3.0 -
     0.2.0 - Include Scale vector layer algortihm
     0.1.0 - First testing release
 
