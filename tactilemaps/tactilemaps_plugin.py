@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
+"""Build the TactileMapsPlugin class.
+
 ************************************************************************
     Name                : tactilemaps_plugin.py
     Date                : March 2023

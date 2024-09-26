@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
+"""Scale a vector layer given a scale denominator number.
+
 ************************************************************************
     Name                : scalevectorlayer_algorithm.py
     Date                : April 2023
@@ -12,8 +13,6 @@
   (at your option) any later version.
 ************************************************************************
 """
-
-from math import ceil
 
 from qgis.core import (
     QgsCoordinateReferenceSystem,
@@ -28,14 +27,14 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import (
     QCoreApplication,
-    QSettings,
-    QVariant
+    QSettings
 )
 from qgis.PyQt.QtGui import QTransform
 
 
 class ScaleVectorLayer(QgsProcessingAlgorithm):
     """Scale vector layer algorithm class."""
+
     INPUT = 'INPUT'
     EXTENT = 'EXTENT'
     SCALE = 'SCALE'
@@ -45,7 +44,7 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
         """Return a localized string."""
         return QCoreApplication.translate('ScaleVectorLayer', string)
 
-    def rwSettings(self, mode, setting_name, value):
+    def rw_settings(self, mode, setting_name, value):
         """Read and write tactilemaps settings.
 
         If 'mode' is 'r', read the value of 'setting_name',
@@ -124,7 +123,7 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             self.tr('Scale denominator number'),
             QgsProcessingParameterNumber.Integer,
             minValue=1,
-            defaultValue=self.rwSettings('r', 'scale', 1)
+            defaultValue=self.rw_settings('r', 'scale', 1)
         )
         self.addParameter(scale_param)
         # OUTPUTS
@@ -159,14 +158,15 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             self.SCALE,
             context
         )
-        self.rwSettings('w', 'scale', scale_number)
+        self.rw_settings('w', 'scale', scale_number)
         # Perform checks and processing
         input_crs = input_layer.crs()
         input_authid = input_crs.authid()
         extent_crs = extent_layer.crs()
         extent_authid = extent_crs.authid()
         if not input_crs.isValid():
-            msg = self.tr('The CRS of the input layer could not be \
+            msg = self.tr(
+                'The CRS of the input layer could not be \
                 determined or is invalid.'
             )
             feedback.reportError(
@@ -175,7 +175,8 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             )
             return {}
         if not extent_crs.isValid():
-            msg = self.tr('The CRS of the extent layer could not be \
+            msg = self.tr(
+                'The CRS of the extent layer could not be \
                 determined or is invalid.'
             )
             feedback.reportError(
@@ -184,7 +185,8 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             )
             return {}
         if input_crs.isGeographic():
-            msg = self.tr('The CRS of the input layer must be \
+            msg = self.tr(
+                'The CRS of the input layer must be \
                 projected, but {input_authid} is a geographic CRS.'
             )
             feedback.reportError(
@@ -193,7 +195,8 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             )
             return {}
         if extent_crs.isGeographic():
-            msg = self.tr('The CRS of the extent layer must be \
+            msg = self.tr(
+                'The CRS of the extent layer must be \
                 projected, but {extent_authid} is a geographic CRS.'
             )
             feedback.reportError(
@@ -202,7 +205,8 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             )
             return {}
         if input_authid != extent_authid:
-            msg = self.tr('The CRS of the input layer ({input_authid}) \
+            msg = self.tr(
+                'The CRS of the input layer ({input_authid}) \
                 is not the same as the CRS of the extent layer \
                 ({extent_authid}).'
             )
@@ -220,7 +224,7 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             feedback.reportError(
                 msg,
                 fatalError=True
-        )
+            )
         input_fields = input_layer.fields()
         input_type = input_layer.wkbType()
         (sink, dest_id) = self.parameterAsSink(
@@ -237,12 +241,12 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             )
         # *Qtransform translates the scaled coordinates
         scale_factor = 1/scale_number
-        m11=scale_factor
-        m12=0.0
-        m21=0.0
-        m22=scale_factor
-        dx=-extent_rectangle.center().x() * scale_factor # *
-        dy=-extent_rectangle.center().y() * scale_factor # *
+        m11 = scale_factor
+        m12 = 0.0
+        m21 = 0.0
+        m22 = scale_factor
+        dx = -extent_rectangle.center().x() * scale_factor  # *
+        dy = -extent_rectangle.center().y() * scale_factor  # *
         transformer = QTransform(m11, m12, m21, m22, dx, dy)
         # Transform each geometry and add feature to the sink
         partial_progress = 100
@@ -261,7 +265,7 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
         #  load to project on completion is set
         #  (https://gis.stackexchange.com/a/415843/133276)
         sink_value = parameters[self.OUTPUT].sink.staticValue()
-        if sink_value == QgsProcessing.TEMPORARY_OUTPUT:            
+        if sink_value == QgsProcessing.TEMPORARY_OUTPUT:
             newname = self.tr('Scaled_{input_layer_name}')
             global renamer
             renamer = Renamer(
@@ -277,7 +281,7 @@ class Renamer(QgsProcessingLayerPostProcessorInterface):
     """Renamer class."""
 
     def __init__(self, layer_name):
-        """Constructor."""
+        """Initiate a instance of the class."""
         self.name = layer_name
         super().__init__()
 
@@ -288,3 +292,5 @@ class Renamer(QgsProcessingLayerPostProcessorInterface):
         execution of a processing algorithm.
         """
         layer.setName(self.name)
+
+        return True

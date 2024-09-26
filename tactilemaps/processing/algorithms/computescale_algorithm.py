@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
+"""Compute the scale denominator for a map, from an extent and a map size.
+
 ************************************************************************
     Name                : computescale_algorithm.py
     Date                : March 2023
@@ -55,7 +56,7 @@ class ComputeScale(QgsProcessingAlgorithm):
         """Return a localized string."""
         return QCoreApplication.translate('ComputeScale', string)
 
-    def rwSettings(self, mode, setting_name, value):
+    def rw_settings(self, mode, setting_name, value):
         """Read and write tactilemaps settings.
 
         If 'mode' is 'r', read the value of 'setting_name',
@@ -72,15 +73,15 @@ class ComputeScale(QgsProcessingAlgorithm):
             raise ValueError("Invalid mode. Expected one of 'w' or 'r'.")
 
     def createInstance(self):
-        """Return a new instance of the algorithm."""
+        """Create a new instance of the algorithm."""
         return ComputeScale()
 
     def name(self):
-        """Return the algorithm name."""
+        """Define the algorithm name."""
         return 'computescale'
 
     def displayName(self):
-        """Return the algorithm display name."""
+        """Define the algorithm display name."""
         return self.tr('Compute scale')
 
     def group(self):
@@ -128,7 +129,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             self.tr(r'Width of the map (in millimeters)'),
             QgsProcessingParameterNumber.Integer,
             minValue=1,
-            defaultValue=self.rwSettings('r', 'width', 210)
+            defaultValue=self.rw_settings('r', 'width', 210)
         )
         self.addParameter(width_param)
         height_param = QgsProcessingParameterNumber(
@@ -136,7 +137,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             self.tr(r'Height of the map (in millimeters)'),
             QgsProcessingParameterNumber.Integer,
             minValue=1,
-            defaultValue=self.rwSettings('r', 'height', 297)
+            defaultValue=self.rw_settings('r', 'height', 297)
         )
         self.addParameter(height_param)
         margin_param = QgsProcessingParameterNumber(
@@ -144,7 +145,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             self.tr(r'Margin percentage'),
             QgsProcessingParameterNumber.Integer,
             minValue=0,
-            defaultValue=self.rwSettings('r', 'margin', 0)
+            defaultValue=self.rw_settings('r', 'margin', 0)
         )
         margin_param.setFlags(
             margin_param.flags() | advanced_flag
@@ -155,7 +156,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             self.tr(r'Multiple to round the scale denominator'),
             QgsProcessingParameterNumber.Integer,
             minValue=1,
-            defaultValue=self.rwSettings('r', 'multiple', 1)
+            defaultValue=self.rw_settings('r', 'multiple', 1)
         )
         multiple_param.setFlags(
             multiple_param.flags() | advanced_flag
@@ -198,28 +199,29 @@ class ComputeScale(QgsProcessingAlgorithm):
             self.WIDTH,
             context
         )
-        self.rwSettings('w', 'width', width)
+        self.rw_settings('w', 'width', width)
         height = self.parameterAsInt(
             parameters,
             self.HEIGHT,
             context
         )
-        self.rwSettings('w', 'height', height)
+        self.rw_settings('w', 'height', height)
         margin = self.parameterAsInt(
             parameters,
             self.MARGIN,
             context
         )
-        self.rwSettings('w', 'margin', margin)
+        self.rw_settings('w', 'margin', margin)
         multiple = self.parameterAsInt(
             parameters,
             self.MULTIPLE,
             context
         )
-        self.rwSettings('w', 'multiple', multiple)
+        self.rw_settings('w', 'multiple', multiple)
         # Perform checks and processing
         if not crs.isValid():
-            msg = self.tr('The CRS of the extent could not be \
+            msg = self.tr(
+                'The CRS of the extent could not be \
                 determined or is invalid.'
             )
             feedback.reportError(
@@ -228,7 +230,8 @@ class ComputeScale(QgsProcessingAlgorithm):
             )
             return {}
         if crs.isGeographic():
-            msg = self.tr('The CRS of the extent must be projected, \
+            msg = self.tr(
+                'The CRS of the extent must be projected, \
                 but {authid} is a geographic CRS.'
             )
             feedback.reportError(
@@ -263,8 +266,6 @@ class ComputeScale(QgsProcessingAlgorithm):
         map_height = height * units_factor
         # Expand input extent to margin
         extent.scale(1 + margin/100)
-        extent_width = extent.width()
-        extent_height = extent.height()
         # Scale denominator without round
         scale = max(
             extent.width() / map_width,

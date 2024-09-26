@@ -1,1 +1,5 @@
+# Ignore vscode project configuration directory
 .vscode/
+
+# Ignore all __pychache__ directories regardless of their location
+**/__pycache__/
