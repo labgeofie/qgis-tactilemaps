@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Build the TactileMapsPlugin class.
+"""Tactile Maps Plugin for QGIS.
 
 ************************************************************************
     Name                : tactilemaps_plugin.py

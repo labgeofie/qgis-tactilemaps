@@ -3,3 +3,9 @@
 
 # Ignore all __pychache__ directories regardless of their location
 **/__pycache__/
+
+# Ignore all Jupyter notebook files
+*.ipynb
+
+# Ignore temporary files
+temp
