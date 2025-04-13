@@ -1,15 +1,24 @@
 # Change Log
- 
+
+## [Unreleased]
+
+### Added
+
+### Changed
+
+- tactilemaps/metadata.txt: *v0.3.0*.
+- Conform to Flake8.
+
 ## [v0.2.0] - 2023-04-23
 
-  **Include Scale vector layer algorithm**
- 
+**Include Scale vector layer algorithm**
+
 ### Added
 
 - tactilemaps/processing/algorithms/computescale_algortihm.py
 
 ### Changed
-  
+
 - tactilemaps/metadata.txt: *v0.2.0*
 - tactilemaps/tactilemaps_plugin.py: *include scalevectorlayer action and menu entry*
 - tactilemaps/i18n/tactilemaps.pro: *translate scalevectorlayer algorithm*
@@ -17,11 +26,11 @@
 - tactilemaps/i18n/tactilemaps_es.ts: *translate scalevectorlayer algorithm*
 - tactilemaps/processing/tactilemaps_provider.py: *include scalevectorlayer algorithm*
 - tactilemaps/processing/algorithms/computescale_algortihm.py: *write computed scale to scalevectorlayer settings*
- 
+
 ## [v0.1.0] - 2023-04-11
 
 **Primera versión de prueba**
- 
+
 ### Added
 
 - tactilemaps/\_\_init__.py
