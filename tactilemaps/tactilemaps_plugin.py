@@ -4,7 +4,7 @@
 ************************************************************************
     Name                : tactilemaps_plugin.py
     Date                : March 2023
-    Copyright           : (C) 2023 by Laboratorio de Geociencias - FIE
+    Copyright           : (C) 2023-2025 by Laboratorio de Geociencias - FIE
     Email               : geociencias@fie.undef.edu.ar
 ************************************************************************
   This program is free software: you can redistribute it and/or modify

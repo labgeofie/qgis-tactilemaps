@@ -4,7 +4,7 @@
 ************************************************************************
     Name                : tactilemaps_provider.py
     Date                : March 2023
-    Copyright           : (C) 2023 by Laboratorio de Geociencias - FIE
+    Copyright           : (C) 2023-2025 by Laboratorio de Geociencias - FIE
     Email               : geociencias@fie.undef.edu.ar
 ************************************************************************
   This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,8 @@ from qgis.core import QgsProcessingProvider
 
 from tactilemaps.processing.algorithms import (
     computescale_algorithm,
-    scalevectorlayer_algorithm
+    scalevectorlayer_algorithm,
+    extractedges_algorithm,
 )
 
 
@@ -34,6 +35,7 @@ class TactileMapsProvider(QgsProcessingProvider):
         """Load the algorithms of the provider."""
         self.addAlgorithm(computescale_algorithm.ComputeScale())
         self.addAlgorithm(scalevectorlayer_algorithm.ScaleVectorLayer())
+        self.addAlgorithm(extractedges_algorithm.ExtractEdges())
 
     def id(self, *args, **kwargs):
         """Return the id of the provider."""
