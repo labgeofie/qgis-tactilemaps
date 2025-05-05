@@ -91,7 +91,7 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             Output layer will be scaled to the origin of \
                 coordinates of the EPSG:3857 Coordinates \
                 Reference System, and will measure the size of the \
-                map to print, in meters.
+                map to print, in tenths of milimeter.
             EPSG:3857 CRS will be assigned to the \
                 output layer, without reprojecting it.
             """
@@ -240,7 +240,8 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
                 self.invalidSinkError(parameters, self.OUTPUT)
             )
         # *Qtransform translates the scaled coordinates
-        scale_factor = 1/scale_number
+        # 10000 is the tenths of milimeter to meters factor
+        scale_factor = 10000/scale_number
         m11 = scale_factor
         m12 = 0.0
         m21 = 0.0
