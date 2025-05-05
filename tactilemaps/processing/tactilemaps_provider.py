@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
+""" Tactile Maps Processing provider.
+
 ************************************************************************
     Name                : tactilemaps_provider.py
     Date                : March 2023

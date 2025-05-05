@@ -31,7 +31,7 @@ Functions:
 """
 
 
-def classFactory(iface):  # pylint: disable=invalid-name # noqa: N802
+def classFactory(iface):
     """Initialize a plugin instance with the QGIS interface.
 
     Args:

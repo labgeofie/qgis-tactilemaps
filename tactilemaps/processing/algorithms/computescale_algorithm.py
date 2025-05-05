@@ -98,7 +98,8 @@ class ComputeScale(QgsProcessingAlgorithm):
             """
             Compute the scale denominator for a map, from an extent.
             The extent input must have a projected CRS.
-            The width and height of the map are assumed in millimeters.
+            The width and height of the map are assumed in tenths of \
+                millimeters.
             The extent input can be extended by a margin percentage.
             The scale denominator is rounded to a multiple. Set it \
                 to 1 to avoid rounding.
@@ -118,26 +119,28 @@ class ComputeScale(QgsProcessingAlgorithm):
     def initAlgorithm(self, config=None):
         """Define inputs and outputs of the algorithm."""
         advanced_flag = QgsProcessingParameterDefinition.FlagAdvanced
+
         # PARAMETERS
         extent_param = QgsProcessingParameterExtent(
             self.INPUT,
             self.tr('Extent to compute scale')
         )
         self.addParameter(extent_param)
+
         width_param = QgsProcessingParameterNumber(
             self.WIDTH,
-            self.tr(r'Width of the map (in millimeters)'),
+            self.tr(r'Width of the map (in tenths of millimeters)'),
             QgsProcessingParameterNumber.Integer,
             minValue=1,
-            defaultValue=self.rw_settings('r', 'width', 210)
+            defaultValue=self.rw_settings('r', 'width', 2100)
         )
         self.addParameter(width_param)
         height_param = QgsProcessingParameterNumber(
             self.HEIGHT,
-            self.tr(r'Height of the map (in millimeters)'),
+            self.tr(r'Height of the map (in tenths of millimeters)'),
             QgsProcessingParameterNumber.Integer,
             minValue=1,
-            defaultValue=self.rw_settings('r', 'height', 297)
+            defaultValue=self.rw_settings('r', 'height', 2970)
         )
         self.addParameter(height_param)
         margin_param = QgsProcessingParameterNumber(
@@ -151,6 +154,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             margin_param.flags() | advanced_flag
         )
         self.addParameter(margin_param)
+
         multiple_param = QgsProcessingParameterNumber(
             self.MULTIPLE,
             self.tr(r'Multiple to round the scale denominator'),
@@ -162,6 +166,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             multiple_param.flags() | advanced_flag
         )
         self.addParameter(multiple_param)
+
         # OUTPUTS
         main_output = QgsProcessingParameterFeatureSink(
             self.OUTPUT,
@@ -255,12 +260,14 @@ class ComputeScale(QgsProcessingAlgorithm):
             )
         if feedback.isCanceled():
             return {}
-        # Compute multiplier from map units (mm) to extent crs units
+        # Compute multiplier from map units (mm^-1) to extent crs units
         crs_units = crs.mapUnits()
+        # Get the unit factor from meters to CRS units and adjust to tenths
+        #  of milimeter.
         units_factor = QgsUnitTypes.fromUnitToUnitFactor(
-            QgsUnitTypes.DistanceMillimeters,
+            QgsUnitTypes.DistanceMeters,
             crs_units
-        )
+        ) / 10000.0
         # Compute map width and height in the units of the extent crs
         map_width = width * units_factor
         map_height = height * units_factor
