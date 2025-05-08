@@ -117,13 +117,13 @@ class ExtractEdges(QgsProcessingAlgorithm):
         self.addParameter(width_param)
 
         # OUTPUTS
-        scaled_output = QgsProcessingParameterFeatureSink(
+        edges_output = QgsProcessingParameterFeatureSink(
             self.OUTPUT,
-            self.tr('Edge'),
+            self.tr('Edges'),
             QgsProcessing.TypeVectorAnyGeometry,
             defaultValue=QgsProcessing.TEMPORARY_OUTPUT
         )
-        self.addParameter(scaled_output)
+        self.addParameter(edges_output)
 
     def processAlgorithm(self, parameters, context, feedback):
         """Extract edges process.
@@ -157,7 +157,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:multiparttosingleparts',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -174,7 +174,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:fixgeometries',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -192,7 +192,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:simplifygeometries',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -208,7 +208,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:fixgeometries',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -230,7 +230,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:buffer',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -246,7 +246,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:fixgeometries',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -268,7 +268,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:buffer',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -284,7 +284,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:fixgeometries',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -301,7 +301,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:difference',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -318,7 +318,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:dissolve',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
@@ -334,8 +334,38 @@ class ExtractEdges(QgsProcessingAlgorithm):
             'native:fixgeometries',
             alg_params,
             context=context,
-            feedback=feedback,
+            feedback=None,
             is_child_algorithm=True
         )
 
-        return {self.OUTPUT: outputs['fix_dissolved']['OUTPUT']}
+        # OUTPUT
+        last_layer = context.getMapLayer(outputs['fix_dissolved']['OUTPUT'])
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            last_layer.fields(),
+            last_layer.wkbType(),
+            last_layer.crs(),
+        )
+
+        if sink is None:
+            raise QgsProcessingException(
+                self.invalidSinkError(parameters, self.OUTPUT)
+            )
+
+        features = last_layer.getFeatures()
+        total = (100.0 / last_layer.featureCount()
+                    if last_layer.featureCount()
+                    else 0)
+
+        for current, inFeat in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            sink.addFeature(inFeat, QgsFeatureSink.Flag.FastInsert)
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+
+        # return {self.OUTPUT: outputs['fix_dissolved']['OUTPUT']}
