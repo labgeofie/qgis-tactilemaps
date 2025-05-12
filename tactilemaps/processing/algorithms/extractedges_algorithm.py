@@ -367,5 +367,3 @@ class ExtractEdges(QgsProcessingAlgorithm):
             feedback.setProgress(int(current * total))
 
         return {self.OUTPUT: dest_id}
-
-        # return {self.OUTPUT: outputs['fix_dissolved']['OUTPUT']}
