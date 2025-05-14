@@ -15,11 +15,13 @@
 """
 
 from qgis.core import (
-    QgsPointXY,
+    QgsMultiPoint,
+    QgsPoint,
     QgsGeometry
 )
 
 ALPHABET = {
+    " ": "",
     "a": "1",
     "b": "12",
     "c": "14",
@@ -65,10 +67,14 @@ POS = {
     '6': (2, 1)
 }
 
-# Dimension parameters
+# Dimension parameters (tenths of milimeter).
 DIM = {
-    "a": 2.4,
-    "b": 2.4
+    "a": 24,
+    "b": 24,
+    "c": 60,
+    "d": 100,
+    "e": 12,
+    "f": 4  # Between 2 and 5, per "Documento técnico B1".
 }
 
 def convert_char(char):
@@ -82,17 +88,16 @@ def convert_char(char):
     except KeyError:
         return None
 
-    arr = [[0, 0] for _ in range(3)]
+    char_arr = [[0, 0] for _ in range(3)]
 
     for dot in sign:
         if dot in POS:
             i, j = POS[dot]
-            arr[i][j] = 1
+            char_arr[i][j] = 1
 
-    return arr
+    return char_arr
 
-
-def create_geom(arr):
+def create_points(char_arr, start_x=0, start_y=0):
     """Create a MultiPoint geometry from Braille array."""
 
     step_x = DIM["a"]
@@ -100,11 +105,36 @@ def create_geom(arr):
 
     # Create points.
     points = []
-    for i, row in enumerate(arr):
+    for i, row in enumerate(char_arr):
         for j, val in enumerate(row):
             if val:
-                x = j * step_x
-                y = (2 - i) * step_y
-                points.append(QgsPointXY(x, y))
+                x = start_x + j * step_x
+                y = start_y + (2 - i) * step_y
+                points.append(QgsPoint(x, y))
 
-    return QgsGeometry.fromMultiPointXY(points)
+    return points
+
+
+def translate(string):
+    """Translate a string to braille points.
+
+    Return a tuple of a MultiPoint geometry (or None) and a
+    (possibly empty) list of not implemented characters.
+    """
+    multipoints = None
+    errors = []
+
+    string_points = []
+    for i, char in enumerate(string):
+        char_arr = convert_char(char)
+        if not char_arr:
+            errors.append(char)
+            continue
+        start_x = i * DIM["c"]
+        points = create_points(char_arr, start_x)
+        string_points.extend(points)
+
+    if string_points:
+        multipoints = QgsMultiPoint(string_points)
+
+    return multipoints, errors

@@ -39,6 +39,8 @@ from qgis.PyQt.QtCore import (
 )
 from qgis.PyQt.QtGui import QTransform
 
+from tactilemaps.utils import braille
+
 
 class WriteBraille(QgsProcessingAlgorithm):
     """Write Braille algorithm class."""
@@ -136,14 +138,16 @@ class WriteBraille(QgsProcessingAlgorithm):
             name=self.TEXT,
             context=context
         )
+
         print(input_text)
 
         self.rw_settings('w', 'text', input_text)
 
         # Get Braille geometry
-
-        geom = QgsPoint(0, 0)
-
+        geom, errors = braille.translate(input_text)
+        if errors:
+            msg = f"One or more not implemented characters:{errors}."
+            feedback.pushWarning(msg)
 
         # OUTPUT
         fields = QgsFields()
@@ -176,6 +180,5 @@ class WriteBraille(QgsProcessingAlgorithm):
         feat.setGeometry(geom)
 
         sink.addFeature(feat, QgsFeatureSink.Flag.FastInsert)
-        feedback.setProgress(100)
 
         return {self.OUTPUT: dest_id}
