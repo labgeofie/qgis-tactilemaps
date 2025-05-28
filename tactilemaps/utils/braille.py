@@ -21,7 +21,7 @@ from qgis.core import (
 )
 
 ALPHABET = {
-    " ": "",
+    " ": "0",
     "a": "1",
     "b": "12",
     "c": "14",
@@ -97,7 +97,7 @@ def convert_char(char):
 
     return char_arr
 
-def create_points(char_arr, start_x=0, start_y=0):
+def create_points(char_arr, x_off=0, y_off=0):
     """Create a MultiPoint geometry from Braille array."""
 
     step_x = DIM["a"]
@@ -108,33 +108,37 @@ def create_points(char_arr, start_x=0, start_y=0):
     for i, row in enumerate(char_arr):
         for j, val in enumerate(row):
             if val:
-                x = start_x + j * step_x
-                y = start_y + (2 - i) * step_y
+                x = x_off + j * step_x
+                y = y_off + (2 - i) * step_y
                 points.append(QgsPoint(x, y))
 
     return points
 
 
-def translate(string):
-    """Translate a string to braille points.
+def translate(text):
+    """Translate a text to braille points.
 
     Return a tuple of a MultiPoint geometry (or None) and a
     (possibly empty) list of not implemented characters.
     """
-    multipoints = None
+    all_points = []
     errors = []
 
-    string_points = []
-    for i, char in enumerate(string):
-        char_arr = convert_char(char)
-        if not char_arr:
-            errors.append(char)
-            continue
-        start_x = i * DIM["c"]
-        points = create_points(char_arr, start_x)
-        string_points.extend(points)
+    # Process each line
+    for row_idx, line in enumerate(text.splitlines()):
+        y_off = - row_idx * DIM["d"]
+        for col_idx, char in enumerate(line):
+            char_arr = convert_char(char)
+            if not char_arr:
+                errors.append(char)
+                continue
+            x_off = col_idx * DIM["c"]
+            points = create_points(char_arr, x_off, y_off)
+            all_points.extend(points)
 
-    if string_points:
-        multipoints = QgsMultiPoint(string_points)
+
+    multipoints = None
+    if all_points:
+        multipoints = QgsMultiPoint(all_points)
 
     return multipoints, errors
