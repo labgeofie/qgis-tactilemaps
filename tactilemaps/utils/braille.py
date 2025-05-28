@@ -54,7 +54,48 @@ ALPHABET = {
     "í": "34",
     "ó": "346",
     "ú": "23456",
-    "ü": "1256"
+    "ü": "1256",
+    "1": "3456-1",
+    "2": "3456-12",
+    "3": "3456-14",
+    "4": "3456-145",
+    "5": "3456-15",
+    "6": "3456-124",
+    "7": "3456-1245",
+    "8": "3456-125",
+    "9": "3456-24",
+    "0": "3456-245",
+    ".": "3",
+    ",": "2",
+    ";": "23",
+    ":": "25",
+    "¿": "26",
+    "?": "26",
+    "¡": "235",
+    "!": "235",
+    '"': "236",
+    "'": "6-236",
+    "(": "126",
+    ")": "345",
+    "[": "12356",
+    "]": "23456",
+    "{": "5-123",
+    "}": "456-2",
+    "-": "36",
+    "—": "36-36",
+    "*": "35",
+    "/": "6-2",
+    "\\": "5-3",
+    "<": "5-13",
+    ">": "46-2",
+    "+": "235",
+    "=": "2356",
+    "%": "456-356",
+    "&": "6-12346",
+    "@": "5",
+    "€": "456-15",
+    "$": "456-234",
+    "º": "356"
 }
 
 # Position (row, column) inside a 2x3 array for each point code.
@@ -78,24 +119,37 @@ DIM = {
 }
 
 def convert_char(char):
-    """Convert a character to a Braille array.
+    """Convert a character to a Braille list of arrays.
 
-    The character can be lower or upper case.
-    If not implemented, it returns None.
+    Each array contains the mask for a Braille cell.
+    If `char` isn't implemented, returns None.
     """
-    try:
-        sign = ALPHABET[char]
-    except KeyError:
-        return None
+    # Uppercase implementation.
+    if char.isalpha() and char.isupper():
+        key = char.lower()
+        base = ALPHABET.get(key)
+        if base is None:
+            return None
+        sign = "46-" + base
 
-    char_arr = [[0, 0] for _ in range(3)]
+    # Lowercase.
+    else:
+        sign = ALPHABET.get(char)
+        if sign is None:
+            return None
 
-    for dot in sign:
-        if dot in POS:
-            i, j = POS[dot]
-            char_arr[i][j] = 1
+    # Split for multi-cell characters.
+    cells = sign.split("-")
+    list_of_arrs = []
+    for cell in cells:
+        char_arr = [[0, 0] for _ in range(3)]
+        for dot in cell:
+            if dot in POS:
+                i, j = POS[dot]
+                char_arr[i][j] = 1
+        list_of_arrs.append(char_arr)
 
-    return char_arr
+    return list_of_arrs
 
 def create_points(char_arr, x_off=0, y_off=0):
     """Create a MultiPoint geometry from Braille array."""
@@ -127,14 +181,20 @@ def translate(text):
     # Process each line
     for row_idx, line in enumerate(text.splitlines()):
         y_off = - row_idx * DIM["d"]
-        for col_idx, char in enumerate(line):
-            char_arr = convert_char(char)
-            if not char_arr:
+
+        # Track cell index for multicell characters
+        cell_idx = 0
+        for char in line:
+            char_cells = convert_char(char)
+            if not char_cells:
                 errors.append(char)
                 continue
-            x_off = col_idx * DIM["c"]
-            points = create_points(char_arr, x_off, y_off)
-            all_points.extend(points)
+
+            for _cell in char_cells:
+                x_off = cell_idx * DIM["c"]
+                points = create_points(_cell, x_off, y_off)
+                all_points.extend(points)
+                cell_idx += 1
 
 
     multipoints = None
