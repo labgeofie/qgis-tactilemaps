@@ -22,22 +22,17 @@ from qgis.core import (
     QgsField,
     QgsFields,
     QgsGeometry,
-    QgsPoint,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
-    QgsProcessingLayerPostProcessorInterface,
     QgsProcessingParameterFeatureSink,
-    QgsProcessingParameterNumber,
     QgsProcessingParameterString,
-    QgsProcessingParameterVectorLayer
 )
 from qgis.PyQt.QtCore import (
     QCoreApplication,
     QMetaType,
     QSettings
 )
-from qgis.PyQt.QtGui import QTransform
 
 from tactilemaps.utils import braille
 
@@ -139,12 +134,10 @@ class WriteBraille(QgsProcessingAlgorithm):
             context=context
         )
 
-        print(input_text)
-
         self.rw_settings('w', 'text', input_text)
 
         # Get Braille geometry
-        geom, errors = braille.translate(input_text)
+        multipoint, errors = braille.translate(input_text)
         if errors:
             msg = f"One or more not implemented characters:{errors}."
             feedback.pushWarning(msg)
@@ -154,10 +147,15 @@ class WriteBraille(QgsProcessingAlgorithm):
         fields_list = [
             QgsField("id", QMetaType.Type.Int),
             QgsField("text", QMetaType.Type.QString),
+            QgsField("h", QMetaType.Type.QString)
         ]
         fields.append(fields_list)
 
-        geometryType = Qgis.WkbType.MultiPoint
+        geom = QgsGeometry(multipoint).buffer(
+            distance=braille.DIM["e"] / 2,
+            segments=5
+        )
+        geometryType = Qgis.WkbType.MultiPolygon
         crs = QgsCoordinateReferenceSystem("EPSG:3857")
 
         (sink, dest_id) = self.parameterAsSink(
@@ -177,6 +175,7 @@ class WriteBraille(QgsProcessingAlgorithm):
         feat = QgsFeature(fields)
         feat["id"] = 1
         feat["text"] = input_text
+        feat["h"] = braille.DIM["f"]
         feat.setGeometry(geom)
 
         sink.addFeature(feat, QgsFeatureSink.Flag.FastInsert)

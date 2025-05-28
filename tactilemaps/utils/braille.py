@@ -17,7 +17,6 @@
 from qgis.core import (
     QgsMultiPoint,
     QgsPoint,
-    QgsGeometry
 )
 
 ALPHABET = {
@@ -118,6 +117,7 @@ DIM = {
     "f": 4  # Between 2 and 5, per "Documento técnico B1".
 }
 
+
 def convert_char(char):
     """Convert a character to a Braille list of arrays.
 
@@ -150,6 +150,7 @@ def convert_char(char):
         list_of_arrs.append(char_arr)
 
     return list_of_arrs
+
 
 def create_points(char_arr, x_off=0, y_off=0):
     """Create a MultiPoint geometry from Braille array."""
