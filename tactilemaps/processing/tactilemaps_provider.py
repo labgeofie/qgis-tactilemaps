@@ -21,7 +21,8 @@ from tactilemaps.processing.algorithms import (
     computescale_algorithm,
     scalevectorlayer_algorithm,
     extractedges_algorithm,
-    writebraille_algorithm
+    writebraille_algorithm,
+    rasterize_algorithm
 )
 
 
@@ -38,6 +39,7 @@ class TactileMapsProvider(QgsProcessingProvider):
         self.addAlgorithm(scalevectorlayer_algorithm.ScaleVectorLayer())
         self.addAlgorithm(extractedges_algorithm.ExtractEdges())
         self.addAlgorithm(writebraille_algorithm.WriteBraille())
+        self.addAlgorithm(rasterize_algorithm.RasterizeMap())
 
     def id(self, *args, **kwargs):
         """Return the id of the provider."""
