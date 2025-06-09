@@ -13,6 +13,8 @@
 ************************************************************************
 """
 
+import os
+
 from qgis.core import (
     Qgis,
     QgsCoordinateReferenceSystem,
@@ -32,6 +34,7 @@ from qgis.core import (
     QgsProcessingParameterRasterDestination,
     QgsProcessingParameterString,
     QgsProcessingParameterVectorLayer,
+    QgsRasterFileWriter,
     QgsVectorFileWriter,
     QgsVectorLayer,
     QgsWkbTypes
@@ -44,6 +47,9 @@ from qgis.PyQt.QtCore import (
 from qgis.PyQt.QtGui import QTransform
 
 import processing
+
+from osgeo import gdal
+import numpy as np
 
 
 class RasterizeMap(QgsProcessingAlgorithm):
@@ -85,7 +91,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
 
     def displayName(self):
         """Return the algorithm display name."""
-        return self.tr('Rasterize map.')
+        return self.tr('Rasterize map')
 
     def group(self):
         """Return the name of the group this algorithm belongs to."""
@@ -150,7 +156,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterDestination(
                 self.OUTPUT_RASTER,
-                "Output raster"
+                "Rasterized map"
             )
         )
 
@@ -180,10 +186,6 @@ class RasterizeMap(QgsProcessingAlgorithm):
             context
         )
 
-        output = self.parameterAsRasterLayer(
-            parameters,
-            self.OUTPUT_RASTER,
-            context)
 
         if not layer_list:
             feedback.reportError(
@@ -240,7 +242,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
             validated_layers.append(lyr)
 
         # Merge all layers into a single layer
-        uri = f"Polygon?crs={reference_crs.authid()}"
+        uri = f"MultiPolygon?crs={reference_crs.authid()}"
         mem_layer = QgsVectorLayer(uri, "merged_polygons", "memory")
         prov = mem_layer.dataProvider()
 
@@ -271,7 +273,6 @@ class RasterizeMap(QgsProcessingAlgorithm):
         mem_layer.updateExtents()
 
         # Rasterize
-        output_path = output.dataProvider().dataSourceUri()
         xmin = extent_map.xMinimum()
         xmax = extent_map.xMaximum()
         ymin = extent_map.yMinimum()
@@ -279,10 +280,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
         extent_str = f"{xmin},{xmax},{ymin},{ymax}"
 
         params_raster = {
-            'INPUT': QgsProcessingFeatureSourceDefinition(
-                         mem_layer.id(),
-                         selectedFeaturesOnly=False
-                     ),
+            'INPUT': mem_layer,
             'FIELD': field_name,
             'BURN': 0,
             'USE_Z': False,
@@ -293,10 +291,56 @@ class RasterizeMap(QgsProcessingAlgorithm):
             'NODATA': -32000,
             'OPTIONS': '',
             'DATA_TYPE': 5, # 0=Byte, 1=UInt16, 2=Int16, 3=UInt32, 4=Int32, 5=Float32, 6=Float64
-            'OUTPUT': output_path
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
 
-        result = processing.run("gdal:rasterize", params_raster, context=context, feedback=feedback)
-        salida = result['OUTPUT']
+        rasterized = processing.run("gdal:rasterize", params_raster, context=context, feedback=feedback)
+        rasterized_output = rasterized['OUTPUT']
 
-        return {self.OUTPUT_RASTER: salida}
+        # Round
+        rasterized_dataset = gdal.Open(rasterized_output, gdal.GA_ReadOnly)
+        crs = rasterized_dataset.GetProjection()
+        geotransform = rasterized_dataset.GetGeoTransform()
+        arr = np.float32(rasterized_dataset.GetRasterBand(1).ReadAsArray())
+        rasterized_dataset = None
+
+        # TODO: Add parameters for kernel radius and sigma
+        RADIUS = 5
+        SIGMA = 1.0
+
+        dist = np.linspace(-RADIUS, RADIUS, RADIUS*2+1)
+
+        kernel = np.exp(-dist**2 / (2*SIGMA**2))
+
+        kernel = kernel / kernel.sum()
+
+        def apply_kernel(vector, kernel):
+            return np.convolve(vector, kernel, mode='same')
+
+        rounded_cols = np.apply_along_axis(apply_kernel, 0, arr, kernel)
+        rounded_arr = np.apply_along_axis(apply_kernel, 1, rounded_cols, kernel)
+
+        outputFile = self.parameterAsOutputLayer(
+            parameters,
+            self.OUTPUT_RASTER,
+            context)
+
+        output_format = QgsRasterFileWriter.driverForExtension(
+            os.path.splitext(outputFile)[1]
+        )
+
+        rounded_dataset = gdal.GetDriverByName(output_format).Create(
+            outputFile,
+            rounded_arr.shape[1],
+            rounded_arr.shape[0],
+            1,
+            gdal.GDT_Float32,
+            options=['COMPRESS=LZW']
+        )
+        rounded_dataset.SetProjection(crs)
+        rounded_dataset.SetGeoTransform(geotransform)
+        rounded_dataset.GetRasterBand(1).WriteArray(rounded_arr)
+        rounded_dataset.GetRasterBand(1).SetNoDataValue(-32000)
+        rounded_dataset = None
+
+        return {self.OUTPUT_RASTER: outputFile}

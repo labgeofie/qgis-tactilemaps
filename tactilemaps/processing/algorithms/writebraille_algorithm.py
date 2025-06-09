@@ -134,6 +134,7 @@ class WriteBraille(QgsProcessingAlgorithm):
             context=context
         )
 
+
         self.rw_settings('w', 'text', input_text)
 
         # Get Braille geometry
