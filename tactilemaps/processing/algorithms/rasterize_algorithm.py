@@ -14,28 +14,21 @@
 """
 
 import os
+import numpy as np
 
 from qgis.core import (
     Qgis,
-    QgsCoordinateReferenceSystem,
-    QgsFeatureSink,
     QgsFeature,
     QgsField,
     QgsGeometry,
     QgsProcessing,
     QgsProcessingAlgorithm,
-    QgsProcessingException,
-    QgsProcessingFeatureSourceDefinition,
-    QgsProcessingLayerPostProcessorInterface,
     QgsProcessingParameterExtent,
-    QgsProcessingParameterFeatureSink,
     QgsProcessingParameterMultipleLayers,
     QgsProcessingParameterNumber,
     QgsProcessingParameterRasterDestination,
     QgsProcessingParameterString,
-    QgsProcessingParameterVectorLayer,
     QgsRasterFileWriter,
-    QgsVectorFileWriter,
     QgsVectorLayer,
     QgsWkbTypes
 )
@@ -44,12 +37,8 @@ from qgis.PyQt.QtCore import (
     QSettings,
     QVariant
 )
-from qgis.PyQt.QtGui import QTransform
-
 import processing
-
 from osgeo import gdal
-import numpy as np
 
 
 class RasterizeMap(QgsProcessingAlgorithm):
@@ -131,11 +120,10 @@ class RasterizeMap(QgsProcessingAlgorithm):
             QgsProcessingParameterString(
                 self.FIELD_NAME,
                 "Field name",
-                defaultValue="h"
+                defaultValue=self.rw_settings('r', 'field_name', "")
             )
         )
 
-        # 3) Parámetro: extensión de salida
         self.addParameter(
             QgsProcessingParameterExtent(
                 self.EXTENT,
@@ -149,7 +137,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
                 self.PIXEL_SIZE,
                 "Pixel size",
                 type=Qgis.ProcessingNumberParameterType.Double,
-                defaultValue=1.0
+                defaultValue=self.rw_settings('r', 'pixel_size', 1)
             )
         )
 
@@ -173,6 +161,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
             self.FIELD_NAME,
             context
         )
+        self.rw_settings('w', 'field_name', field_name)
 
         extent_map = self.parameterAsExtent(
             parameters,
@@ -185,7 +174,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
             self.PIXEL_SIZE,
             context
         )
-
+        self.rw_settings('w', 'pixel_size', ps)
 
         if not layer_list:
             feedback.reportError(
@@ -204,8 +193,6 @@ class RasterizeMap(QgsProcessingAlgorithm):
                 return {}
 
             if lyr.geometryType() != QgsWkbTypes.PolygonGeometry:
-                print(lyr.geometryType())
-                print(QgsWkbTypes.GeometryType)
                 feedback.reportError(
                     f"Layer '{lyr.name()}' is not a polygon layer.",
                     fatalError=True
@@ -253,7 +240,6 @@ class RasterizeMap(QgsProcessingAlgorithm):
         for lyr in validated_layers:
             feats = lyr.getFeatures()
             for feat in feats:
-                attrs = feat.attributes()
                 # Field name will be the only attribute
                 val = feat[field_name]
                 g = feat.geometry()
@@ -267,7 +253,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
 
         if total_feats == 0:
             feedback.reportError(
-                f"No features found in input layers.",
+                "No features found in input layers.",
                 fatalError=True
             )
         mem_layer.updateExtents()

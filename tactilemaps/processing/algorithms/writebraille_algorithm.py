@@ -88,17 +88,20 @@ class WriteBraille(QgsProcessingAlgorithm):
         return self.tr(
             """
             Write a text in Braille.
-            The text is automatically converted to uppercase and can be
-                single-line or multi-line.
             The text will be written with the origin point at X=0, Y=0,
-                in the EPSG:3857 coordinate system.
-            The output will have a single feature with a multipoint geometry.
+                in the EPSG:3857 coordinate system, using tenths of milimeters
+                as units of standard dimensions.
+            The output will have a single feature with a multipolygon geometry.
+            If the text contains unimplemented characters, a warning is issued
+                and the cells containing those characters are left empty.
+            An "h" attribute is filled with the standard height to be
+                rasterized.
             """
         )
 
     def shortDescription(self):
         """Return the display description of the algorithm."""
-        return self.tr('Scale a vector layer.')
+        return self.tr('Write a text in Braille.')
 
     def initAlgorithm(self, config=None):
         """Define inputs and outputs of the algorithm."""
@@ -123,21 +126,19 @@ class WriteBraille(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         """Write Braille process.
 
-        Return the input text, in Braille, as a vector layer with one feature \
-            and MultiPoint geometry, centered in the origin of coordinates \
+        Return the input text, in Braille, as a vector layer with one feature
+            and MultiPolygon geometry, in the origin of coordinates
             of EPSG:3857 CRS.
         """
-        # Get parameters and write settings
+        # Get text from parameters
         input_text = self.parameterAsString(
             parameters=parameters,
             name=self.TEXT,
             context=context
         )
-
-
         self.rw_settings('w', 'text', input_text)
 
-        # Get Braille geometry
+        # Get Braille multipoint geometry
         multipoint, errors = braille.translate(input_text)
         if errors:
             msg = f"One or more not implemented characters:{errors}."

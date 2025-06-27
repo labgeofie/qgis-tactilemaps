@@ -138,8 +138,8 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         """Scale Vector Layer process.
 
-        Return the input vector layer scaled, from the extent layer, \
-            by a scale denominator number, centered in the origin of \
+        Return the input vector layer scaled, from the extent layer,
+            by a scale denominator number, centered in the origin of
             coordinates of EPSG:3857.
         """
         # Get parameters and write settings
@@ -286,7 +286,7 @@ class Renamer(QgsProcessingLayerPostProcessorInterface):
         self.name = layer_name
         super().__init__()
 
-    def postProcessLayer(self, layer, context, feedback):
+    def postProcessLayer(self, layer):
         """Post-process the specified layer.
 
         Post-process the specified layer, following successful

@@ -15,13 +15,12 @@
 """
 
 import os
-from pathlib import Path
 
 from qgis import processing
 from qgis.core import QgsApplication, QgsSettings
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QMenu
+from qgis.PyQt.QtWidgets import QAction
 
 from tactilemaps.processing.tactilemaps_provider import (
     TactileMapsProvider
@@ -62,7 +61,7 @@ class TactileMapsPlugin:
 
     def initGui(self):
         """Init actions, run methods, menu entries and provider."""
-        icon = QIcon(str(Path(__file__).parent / "icon.png"))
+        icon = QIcon(os.path.join(self.plugin_abspath, "icon.png"))
         # Init actions
         self.computescale_action = QAction(
             self.tr('&Compute scale'),

@@ -15,12 +15,10 @@
 """
 
 from qgis.core import (
-    QgsCoordinateReferenceSystem,
     QgsFeatureSink,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
-    QgsProcessingLayerPostProcessorInterface,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterNumber,
     QgsProcessingParameterVectorLayer
@@ -29,7 +27,6 @@ from qgis.PyQt.QtCore import (
     QCoreApplication,
     QSettings
 )
-from qgis.PyQt.QtGui import QTransform
 
 import processing
 
@@ -128,7 +125,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         """Extract edges process.
 
-        Return a polygon layer with the edges of input layer buffered to \
+        Return a polygon layer with the edges of input layer buffered to
             fill a width expressed in tenths of milimeter.
         """
         # Get parameters and write settings
@@ -340,6 +337,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
 
         # OUTPUT
         last_layer = context.getMapLayer(outputs['fix_dissolved']['OUTPUT'])
+        # TODO: include "h" field.
         (sink, dest_id) = self.parameterAsSink(
             parameters,
             self.OUTPUT,

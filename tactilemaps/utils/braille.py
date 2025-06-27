@@ -107,7 +107,7 @@ POS = {
     '6': (2, 1)
 }
 
-# Dimension parameters (tenths of milimeter).
+# Standard dimension parameters (tenths of milimeter).
 DIM = {
     "a": 24,
     "b": 24,
@@ -116,7 +116,6 @@ DIM = {
     "e": 12,
     "f": 4  # Between 2 and 5, per "Documento técnico B1".
 }
-
 
 def convert_char(char):
     """Convert a character to a Braille list of arrays.
@@ -151,10 +150,8 @@ def convert_char(char):
 
     return list_of_arrs
 
-
 def create_points(char_arr, x_off=0, y_off=0):
     """Create a MultiPoint geometry from Braille array."""
-
     step_x = DIM["a"]
     step_y = DIM["b"]
 
@@ -168,7 +165,6 @@ def create_points(char_arr, x_off=0, y_off=0):
                 points.append(QgsPoint(x, y))
 
     return points
-
 
 def translate(text):
     """Translate a text to braille points.
@@ -196,7 +192,6 @@ def translate(text):
                 points = create_points(_cell, x_off, y_off)
                 all_points.extend(points)
                 cell_idx += 1
-
 
     multipoints = None
     if all_points:

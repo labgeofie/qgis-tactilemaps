@@ -9,7 +9,7 @@ author=Laboratorio de Geociencias - FIE
 email=geociencias@fie.undef.edu.ar
 
 about=Processing plugin with tools to generate digital elevation models from vector geometries, in order to print tactile maps.
-    It includes a scale calculator, tools for scaling geometries to the size of the printed map, polygon edge extraction, Braille writing, Gaussian filtering, and rasterization.
+    It includes a scale calculator, tools for scaling geometries to the size of the printed map, polygon edge extraction, Braille writing, rasterization and Gaussian filtering.
 
 tracker=https://github.com/labgeofie/qgis-tactilemaps/issues
 repository=https://github.com/labgeofie/qgis-tactilemaps
@@ -19,11 +19,11 @@ tags=tactile,braille,gaussian,dem,3d,print
 homepage=https://github.com/labgeofie/qgis-tactilemaps/wiki
 
 changelog=
-    0.3.0 -
+    0.3.0 - Include Write Braille and rasterize algorithms
     0.2.0 - Include Scale vector layer algortihm
     0.1.0 - First testing release
 
-icon=
+icon=icon.png
 
 experimental=False
 deprecated=False
