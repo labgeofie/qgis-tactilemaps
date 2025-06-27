@@ -15,6 +15,7 @@
 """
 
 import os
+from pathlib import Path
 
 from qgis import processing
 from qgis.core import QgsApplication, QgsSettings
@@ -61,6 +62,7 @@ class TactileMapsPlugin:
 
     def initGui(self):
         """Init actions, run methods, menu entries and provider."""
+        icon = QIcon(str(Path(__file__).parent / "icon.png"))
         # Init actions
         self.computescale_action = QAction(
             self.tr('&Compute scale'),
@@ -69,6 +71,24 @@ class TactileMapsPlugin:
         self.computescale_action.triggered.connect(
             self.run_computescale
         )
+        self.extractedges_action = QAction(
+            self.tr('&Extract edges'),
+            self.iface.mainWindow()
+        )
+        self.extractedges_action.triggered.connect(
+            self.run_extractedges
+        )
+        self.rasterizemap_action = QAction(
+            self.tr('&Rasterize map'),
+            self.iface.mainWindow()
+        )
+        self.rasterizemap_action.triggered.connect(
+            self.run_rasterizemap
+        )
+        self.writebraille_action = QAction(
+            self.tr('&Write braille'),
+            self.iface.mainWindow()
+        )
         self.scalevectorlayer_action = QAction(
             self.tr('&Scale vector layer'),
             self.iface.mainWindow()
@@ -76,32 +96,46 @@ class TactileMapsPlugin:
         self.scalevectorlayer_action.triggered.connect(
             self.run_scalevectorlayer
         )
+        self.writebraille_action.triggered.connect(
+            self.run_writebraille
+        )
         # Init menu
-        self.menu = QMenu(self.tr('&Tactile Maps'))
+        self.menu = self.iface.pluginMenu().addMenu(
+            icon,
+            self.tr('&Tactile Maps')
+        )
         self.menu.addActions([
             self.computescale_action,
-            self.scalevectorlayer_action
+            self.extractedges_action,
+            self.rasterizemap_action,
+            self.scalevectorlayer_action,
+            self.writebraille_action
         ])
-        self.iface.pluginMenu().addMenu(self.menu)
+
         # Init Processing
         self.initProcessing()
 
     def unload(self):
-        """Remove menu entries and provider."""
-        self.iface.removePluginMenu(
-            self.tr('&Tactile Maps'),
-            self.computescale_action
-        )
-        self.iface.removePluginMenu(
-            self.tr('&Tactile Maps'),
-            self.scalevectorlayer_action
-        )
+        """Remove menu entry and provider."""
+        self.iface.pluginMenu().removeAction(self.menu.menuAction())
         QgsApplication.processingRegistry().removeProvider(self.provider)
 
     def run_computescale(self):
         """Open the Compute scale algorithm dialog."""
         processing.execAlgorithmDialog('tactilemaps:computescale')
 
+    def run_extractedges(self):
+        """Open the Extract edges algorithm dialog."""
+        processing.execAlgorithmDialog('tactilemaps:extractedges')
+
+    def run_rasterizemap(self):
+        """Open the Rasterize map algorithm dialog."""
+        processing.execAlgorithmDialog('tactilemaps:rasterizemap')
+
     def run_scalevectorlayer(self):
         """Open the Scale vector layer algorithm dialog."""
         processing.execAlgorithmDialog('tactilemaps:scalevectorlayer')
+
+    def run_writebraille(self):
+        """Open the Write braille algorithm dialog."""
+        processing.execAlgorithmDialog('tactilemaps:writebraille')

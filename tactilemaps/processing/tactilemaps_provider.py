@@ -14,15 +14,18 @@
 ************************************************************************
 """
 
+from pathlib import Path
+
 from qgis.PyQt.QtCore import QCoreApplication
+from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsProcessingProvider
 
 from tactilemaps.processing.algorithms import (
     computescale_algorithm,
-    scalevectorlayer_algorithm,
     extractedges_algorithm,
-    writebraille_algorithm,
-    rasterize_algorithm
+    rasterize_algorithm,
+    scalevectorlayer_algorithm,
+    writebraille_algorithm
 )
 
 
@@ -36,10 +39,10 @@ class TactileMapsProvider(QgsProcessingProvider):
     def loadAlgorithms(self, *args, **kwargs):
         """Load the algorithms of the provider."""
         self.addAlgorithm(computescale_algorithm.ComputeScale())
-        self.addAlgorithm(scalevectorlayer_algorithm.ScaleVectorLayer())
         self.addAlgorithm(extractedges_algorithm.ExtractEdges())
-        self.addAlgorithm(writebraille_algorithm.WriteBraille())
         self.addAlgorithm(rasterize_algorithm.RasterizeMap())
+        self.addAlgorithm(scalevectorlayer_algorithm.ScaleVectorLayer())
+        self.addAlgorithm(writebraille_algorithm.WriteBraille())
 
     def id(self, *args, **kwargs):
         """Return the id of the provider."""
@@ -51,5 +54,5 @@ class TactileMapsProvider(QgsProcessingProvider):
 
     def icon(self):
         """Return the icon of the provider."""
-        # TODO: Agregar un icono
-        return QgsProcessingProvider.icon(self)
+        icon = QIcon(str(Path(__file__).parent.parent / "icon.png"))
+        return icon
