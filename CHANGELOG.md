@@ -1,9 +1,15 @@
 # Change Log
 
-## [Unreleased]
+## [v0.3.0] - 2025-05-30
+
+**Include algorithms to extract edges, write Braille and rasterize map.**
 
 ### Added
 
+- tactilemaps/processing/algorithms/extractedges_algorithm.py
+- tactilemaps/processing/algorithms/writebraille_algorithm.py
+- tactilemaps/processing/algorithms/rasterize_algorithm.py
+- tactilemaps/processing/utils/braille.py
 ### Changed
 
 - tactilemaps/metadata.txt: *v0.3.0*.
