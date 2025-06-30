@@ -88,13 +88,13 @@ class WriteBraille(QgsProcessingAlgorithm):
         return self.tr(
             """
             Write a text in Braille.
-            The text will be written with the origin point at X=0, Y=0,
-                in the EPSG:3857 coordinate system, using tenths of milimeters
+            The text will be written with the origin point at X=0, Y=0, \
+                in the EPSG:3857 coordinate system, using tenths of milimeters \
                 as units of standard dimensions.
             The output will have a single feature with a multipolygon geometry.
-            If the text contains unimplemented characters, a warning is issued
+            If the text contains unimplemented characters, a warning is issued \
                 and the cells containing those characters are left empty.
-            An "h" attribute is filled with the standard height to be
+            An "h" attribute is filled with the standard height to be \
                 rasterized.
             """
         )

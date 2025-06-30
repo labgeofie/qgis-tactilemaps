@@ -101,7 +101,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             The width and height of the map are assumed in tenths of \
                 millimeters.
             The extent input can be extended by a margin percentage.
-            The scale denominator is rounded to a multiple. Set it \
+            The scale denominator can be rounded to a multiple. Set it \
                 to 1 to avoid rounding.
             This algorithm returns a vector layer with the extent \
                 adjusted for the computed scale.

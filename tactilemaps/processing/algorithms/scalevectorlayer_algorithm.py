@@ -20,7 +20,6 @@ from qgis.core import (
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
-    QgsProcessingLayerPostProcessorInterface,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterNumber,
     QgsProcessingParameterVectorLayer

@@ -129,11 +129,6 @@ class ExtractEdges(QgsProcessingAlgorithm):
             fill a width expressed in tenths of milimeter.
         """
         # Get parameters and write settings
-        input_layer = self.parameterAsVectorLayer(
-            parameters,
-            self.INPUT,
-            context
-        )
         edge_width = self.parameterAsInt(
             parameters,
             self.WIDTH,
@@ -325,7 +320,7 @@ class ExtractEdges(QgsProcessingAlgorithm):
         # Fix dissolved geometries.
         alg_params = {
             'INPUT': outputs['dissolved']['OUTPUT'],
-            'OUTPUT': parameters[self.OUTPUT]
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
         outputs['fix_dissolved'] = processing.run(
             'native:fixgeometries',
