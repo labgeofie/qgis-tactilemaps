@@ -98,6 +98,8 @@ class RasterizeMap(QgsProcessingAlgorithm):
             All layers must have the same CRS and a field with the value \
                 to be rasterized.
             All units are in tenths of milimeter.
+            Raster output will be burned with zero values where no polygon \
+                is present.
             """
         )
 
@@ -106,6 +108,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
         return self.tr('Rasterize a map from polygon layers.')
 
     def initAlgorithm(self, config=None):
+        """Define the inputs and outputs of the algorithm."""
         self.addParameter(
             QgsProcessingParameterMultipleLayers(
                 self.INPUT_LAYERS,
@@ -149,7 +152,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
         )
 
     def processAlgorithm(self, parameters, context, feedback):
-
+        """Rasterize polygon layers by a field value."""
         layer_list = self.parameterAsLayerList(
             parameters,
             self.INPUT_LAYERS,

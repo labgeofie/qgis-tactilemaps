@@ -39,14 +39,14 @@ Las siguientes características serán incluídas antes de publicarse la primer 
   - [x] Escalar capa vectorial
   - [x] Extraer contornos de polígonos
   - [x] Escribir Braille
-  - [ ] Rasterizar mapa
-  - [ ] Suavizar aristas
+  - [x] Rasterizar mapa
+  - [x] Suavizar aristas
 
 - Funciones del motor de expresiones:
   - [ ] computescale()
   - [ ] writebraille()
 
-- [ ] Crear el ícono del complemento.
+- [x] Crear el ícono del complemento.
 - [ ] Documentar la [wiki](https://github.com/labgeofie/qgis-tactilemaps/wiki).
 - [ ] Adjuntar un modelo gráfico que realice el flujo de trabajo completo utilizando las herramientas instaladas por el complemento, a partir una capa de polígonos hasta el mapa en formato raster para imprimir en 3D.
 
