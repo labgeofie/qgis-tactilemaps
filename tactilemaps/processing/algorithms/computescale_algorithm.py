@@ -36,8 +36,8 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import (
     QCoreApplication,
-    QSettings,
-    QMetaType
+    QMetaType,
+    QSettings
 )
 
 

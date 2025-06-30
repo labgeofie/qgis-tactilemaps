@@ -274,7 +274,7 @@ class RasterizeMap(QgsProcessingAlgorithm):
             'WIDTH': ps,
             'HEIGHT': ps,
             'EXTENT': extent_str,
-            'NODATA': -32000,
+            'NODATA': None,
             'OPTIONS': '',
             'DATA_TYPE': 5, # 0=Byte, 1=UInt16, 2=Int16, 3=UInt32, 4=Int32, 5=Float32, 6=Float64
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
@@ -326,7 +326,6 @@ class RasterizeMap(QgsProcessingAlgorithm):
         rounded_dataset.SetProjection(crs)
         rounded_dataset.SetGeoTransform(geotransform)
         rounded_dataset.GetRasterBand(1).WriteArray(rounded_arr)
-        rounded_dataset.GetRasterBand(1).SetNoDataValue(-32000)
         rounded_dataset = None
 
         return {self.OUTPUT_RASTER: outputFile}

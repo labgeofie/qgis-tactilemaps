@@ -149,7 +149,7 @@ class WriteBraille(QgsProcessingAlgorithm):
         fields_list = [
             QgsField("id", QMetaType.Type.Int),
             QgsField("text", QMetaType.Type.QString),
-            QgsField("h", QMetaType.Type.QString)
+            QgsField("h", QMetaType.Type.Int)
         ]
         fields.append(fields_list)
 

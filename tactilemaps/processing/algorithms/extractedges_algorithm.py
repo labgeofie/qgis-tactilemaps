@@ -16,6 +16,7 @@
 
 from qgis.core import (
     QgsFeatureSink,
+    QgsField,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
@@ -25,10 +26,13 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import (
     QCoreApplication,
+    QMetaType,
     QSettings
 )
 
 import processing
+
+from tactilemaps.utils import braille
 
 
 class ExtractEdges(QgsProcessingAlgorithm):
@@ -332,14 +336,16 @@ class ExtractEdges(QgsProcessingAlgorithm):
 
         # OUTPUT
         last_layer = context.getMapLayer(outputs['fix_dissolved']['OUTPUT'])
-        # TODO: include "h" field.
+        fields = last_layer.fields()
+        fields.append(QgsField("h", QMetaType.Type.Int))
+
         (sink, dest_id) = self.parameterAsSink(
             parameters,
             self.OUTPUT,
             context,
-            last_layer.fields(),
+            fields,
             last_layer.wkbType(),
-            last_layer.crs(),
+            last_layer.crs()
         )
 
         if sink is None:
@@ -352,11 +358,15 @@ class ExtractEdges(QgsProcessingAlgorithm):
                     if last_layer.featureCount()
                     else 0)
 
-        for current, inFeat in enumerate(features):
+        for current, feat in enumerate(features):
             if feedback.isCanceled():
                 break
-
-            sink.addFeature(inFeat, QgsFeatureSink.Flag.FastInsert)
+            src_attrs = feat.attributeMap()
+            feat.setFields(fields)
+            for attr in src_attrs:
+                feat[attr] = src_attrs[attr]
+            feat["h"] = braille.DIM["f"]
+            sink.addFeature(feat, QgsFeatureSink.Flag.FastInsert)
             feedback.setProgress(int(current * total))
 
         return {self.OUTPUT: dest_id}
