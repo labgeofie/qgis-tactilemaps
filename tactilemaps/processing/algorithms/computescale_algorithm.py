@@ -37,7 +37,7 @@ from qgis.core import (
 from qgis.PyQt.QtCore import (
     QCoreApplication,
     QSettings,
-    QVariant
+    QMetaType
 )
 
 
@@ -245,7 +245,7 @@ class ComputeScale(QgsProcessingAlgorithm):
             )
             return {}
         fields = QgsFields()
-        fields.append(QgsField('scale', QVariant.Int))
+        fields.append(QgsField('scale', QMetaType.Type.Int))
         (sink, dest_id) = self.parameterAsSink(
             parameters,
             self.OUTPUT,

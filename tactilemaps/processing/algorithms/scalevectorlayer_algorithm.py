@@ -239,7 +239,7 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
             raise QgsProcessingException(
                 self.invalidSinkError(parameters, self.OUTPUT)
             )
-        # *Qtransform translates the scaled coordinates
+        # Qtransform translates the scaled coordinates
         # 10000 is the tenths of milimeter to meters factor
         scale_factor = 10000/scale_number
         m11 = scale_factor
@@ -257,41 +257,9 @@ class ScaleVectorLayer(QgsProcessingAlgorithm):
         for enum, feature in enumerate(features, 1):
             if feedback.isCanceled():
                 return {}
-            geom = feature.geometry().makeValid()
+            geom = feature.geometry()
             geom.transform(transformer)
             feature.setGeometry(geom)
             sink.addFeature(feature, QgsFeatureSink.FastInsert)
             feedback.setProgress(int(enum * partial_progress))
-        # Rename the output if it is a temporary output and
-        #  load to project on completion is set
-        #  (https://gis.stackexchange.com/a/415843/133276)
-        sink_value = parameters[self.OUTPUT].sink.staticValue()
-        if sink_value == QgsProcessing.TEMPORARY_OUTPUT:
-            newname = self.tr('Scaled_{input_layer_name}')
-            global renamer
-            renamer = Renamer(
-                newname.format(input_layer_name=input_layer.name())
-            )
-            context.layerToLoadOnCompletionDetails(
-                dest_id
-            ).setPostProcessor(renamer)
         return {self.OUTPUT: dest_id}
-
-
-class Renamer(QgsProcessingLayerPostProcessorInterface):
-    """Renamer class."""
-
-    def __init__(self, layer_name):
-        """Initiate a instance of the class."""
-        self.name = layer_name
-        super().__init__()
-
-    def postProcessLayer(self, layer):
-        """Post-process the specified layer.
-
-        Post-process the specified layer, following successful
-        execution of a processing algorithm.
-        """
-        layer.setName(self.name)
-
-        return True
