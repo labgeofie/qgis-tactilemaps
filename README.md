@@ -1,4 +1,5 @@
 # Mapas Táctiles
+[(English version)]([#tactile-maps])
 
 Complemento de QGIS con herramientas de procesamiento para **generar modelos digitales de elevación a partir de geometrías vectoriales**.
 
@@ -10,23 +11,11 @@ Desarrollo en el marco del *Proyecto de Desarrollo Tecnológico Y Social (PDTS�
 
 ## Instalación
 
-La publicación en el repositorio oficial de complementos de QGIS se realizará a partir de la primer versión estable (v1.0.0).
+A partir de la versión 0.3.0, el complemento se encuentra publicado en el repositorio oficial de QGIS, por lo que se puede instalar la última versión directamente desde el [diálogo de complementos](https://docs.qgis.org/3.40/es/docs/user_manual/plugins/plugins.html#the-plugins-dialog).
 
-Actualmente el complemento está en estado de desarrollo y puede instalarse de dos maneras:
+También se puede descargar el archivo ZIP correspondiente a cualquiera de las [versiones publicadas en el sitio de complementos de QGIS](https://plugins.qgis.org/plugins/tactilemaps/#plugin-versions), haciendo click en el número de la versión que se quiere descargar, y dentro de la página de esa versión haciendo click en el botón de Descarga. El archivo descargado se instala en QGIS desde [la pestaña instalar a partir de ZIP](https://docs.qgis.org/3.40/es/docs/user_manual/plugins/plugins.html#the-install-from-zip-tab).
 
-1. Agregando al listado de repositorios de complementos de QGIS:
-   - En el menú *Complementos*, abrir el diálogo *Administrar e instalar complementos...*
-   - En la pestaña *Configuración*, en la sección de *Repositorios de complementos*, presionar el botón Añadir
-   - En *Nombre*, elegir un nombre que identifique al repositorio, por ejemplo: `Repositorio de Mapas Táctiles`.
-   - En *URL*, ingresar la siguiente dirección: `https://github.com/labgeofie/qgis-tactilemaps/releases/latest/download/plugins.xml`
-   - Al presionar *Aceptar*, el repositorio se agrega al listado de repositorios de complementos de QGIS, y se podrá instalar el complemento desde la pestaña *Todos*.
-   - **De esta forma, cada vez que se publique una nueva versión, se podrá actualizar el complemento sin necesidad de volver a instalarlo.**
-
-2. Instalando una versión en particular desde un archivo zip.
-   - Desde la página de [Lanzamientos](https://github.com/labgeofie/qgis-tactilemaps/releases), descargar el archivo `tactilemaps.x.y.z.zip` de la versión que se desea instalar.
-   - En el menú *Complementos* de QGIS, abrir el diálogo *Administrar e instalar complementos...*
-   - En la pestaña *Instalar a partir de zip*, presionar *...* para abrir un explorador de archivos. Buscar y seleccionar el archivo zip descargado y presionar *Abrir* en el explorador.
-   - Por último, presionar *Instalar complemento*
+También se publican en la página de [Lanzamientos](https://github.com/labgeofie/qgis-tactilemaps/releases) de este repositorio los archivos ZIP correspondientes a cada versión.
 
 ---
 
@@ -52,6 +41,24 @@ Las siguientes características serán incluídas antes de publicarse la primer 
 
 ---
 
-Copyright: (C) 2023, Laboratorio de Geociencias - FIE
+Copyright: (C) 2023-2025, Laboratorio de Geociencias - FIE
 
 Licencia: [GNU General Public License, Version 3](https://raw.githubusercontent.com/labgeofie/qgis-tactilemaps/main/LICENSE)
+
+---
+*English version*
+## Tactile Maps
+
+QGIS plugin with processing tools to **generate digital elevation models from vector geometries**. 
+
+Includes a scale calculator, tools for scaling geometries to the size of the printed map, extraction of polygon contours, Braille writing, rasterization, and Gaussian filtering. 
+
+Development made under the framework of the *Proyecto de Desarrollo Tecnológico Y Social (PDTS–FIE): Mapas táctiles geográficos (3D) con fines educativos para personas con discapacidad visual* project.
+
+### Instalation
+
+As of version 0.3.0, the plugin is published in the official QGIS repository, so the latest version can be installed directly from the [plugins dialog](https://docs.qgis.org/3.40/en/docs/user_manual/plugins/plugins.html#the-plugins-dialog). 
+
+The ZIP file corresponding to any of the [versions published on the QGIS plugin site](https://plugins.qgis.org/plugins/tactilemaps/#plugin-versions) can also be downloaded, by clicking on the number of the version to download, and within the page of that version by clicking on the Download button. The downloaded file is installed in QGIS from [install from ZIP tab](https://docs.qgis.org/3.40/en/docs/user_manual/plugins/plugins.html#the-install-from-zip-tab). 
+
+The ZIP files for each version are also published on the [Releases](https://github.com/labgeofie/qgis-tactilemaps/releases) page of this repository.
