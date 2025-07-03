@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.3.1] - Unreleased
+
+**Update Spanish translations.**
+
+### Added
+
+### Changed
+
+
 ## [v0.3.0] - 2025-05-30
 
 **Include algorithms to extract edges, write Braille and rasterize map.**
