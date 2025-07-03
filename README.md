@@ -1,5 +1,5 @@
 # Mapas Táctiles
-[(English version)]([#tactile-maps])
+[(English version)](#tactile-maps)
 
 Complemento de QGIS con herramientas de procesamiento para **generar modelos digitales de elevación a partir de geometrías vectoriales**.
 
